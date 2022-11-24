@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %} Anonymous Votes</title>
+    <!-- Bulma css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    {% block head %}{% endblock head %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        a.link-no-color {
+            color: white;
+        }
+    </style>
+</head>
+<body class="has-navbar-fixed-top">
+    <nav class="navbar has-shadow is-success is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand is-flex is-justify-content-space-between">
+            <h3 class="navbar-item is-size-4 has-text-weight-bold"><a href="{% url 'match:index' %}" class="link-no-color">Shop</a></h3>
+            <div class="is-flex mr-2">
+                {% if user.is_superuser %}
+                <a class="navbar-item" href="{% url 'admin:index' %}">
+                    <img src="{% static 'svgs/key.svg' %}" alt="info" />
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+
+  
+    <script>
+        function getCookie(e) {
+            let t = null; if (document.cookie && "" !== document.cookie) {
+                let i = document.cookie.split(";"); for (let l = 0; l < i.length; l++) {
+                    let o = i[l].trim(); if (o.substring(0, e.length+1) === e+"=") {
+                        t = decodeURIComponent(o.substring(e.length+1)); break
+                    }}}return t
+        }
+        const csrftoken = getCookie('csrftoken');
+    </script>
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block script %}{% endblock script %}
+</body>
+</html>

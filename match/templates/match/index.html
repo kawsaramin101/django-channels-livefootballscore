@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="mt-">
+    {% for match in matches %}
+        <a href="{% url 'match:match_details' match.secondary_id %}">{{match}}</a>
+        
+        {% if user.is_superuser %}
+            <a href="{% url 'livefeed:add_score' match.secondary_id %}">Add Score</a>
+            <br />
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock content %}
+{% block script %}
+
+{% endblock script %}

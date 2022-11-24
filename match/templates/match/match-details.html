@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+<style>
+    table {
+        border-collapse: separate;
+        border-spacing: 2rem 0;
+    }
+</style>
+{% endblock head %}
+{% block content %}
+<div class="card m-3">
+    <div class="card-content">
+        <div class="has-text-centered is-size-4">
+            {{team_one.name}} <b>{{team_one.scores.count}}</b> - <b>{{team_two.scores.count}}</b> {{team_two.name}}
+        </div>
+        <table class="mx-auto">
+            {% for score in match.scores.all %}
+            <tr>
+                {% if score.team == team_one %}
+                <td>{{score.player}} - {{score.time}}</td><td></td>
+                {% elif score.team == team_two %}
+                <td></td><td>{{score.player}} - {{score.time}}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+</div>
+{{ match.secondary_id|json_script:"match_secondary_id" }}
+
+{% endblock content %}
+{% block script %}
+<script>
+    const matchSocondaryID = JSON.parse(document.getElementById('match_secondary_id').textContent);
+    const url = `ws://${window.location.host}/ws/livefeed/${matchSocondaryID}/`;
+    console.log(url);
+    const liveFeedSocket = new WebSocket(url);
+       /* 'ws://'
+        + window.location.host
+        + '/ws/livefeed/'
+        + matchSocondaryID
+        + '/'
+    );*/
+
+    liveFeedSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.querySelector('#chat-log').value += (data.message + '\n');
+    };
+
+    liveFeedSocket.onclose = function(e) {
+        console.error(e)
+        console.error('Chat socket closed unexpectedly');
+    };
+/*
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {
+            // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        liveFeedSocket.send(JSON.stringify({
+            'message': message
+        }));
+        messageInputDom.value = '';
+    };*/
+</script>
+{% endblock script %}

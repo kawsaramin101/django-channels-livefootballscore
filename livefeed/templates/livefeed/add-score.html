@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bulma_tags %}
+{% block content %}
+
+<div class="m-4 content">
+    <h3 class="has-text-centered">{{match}}</h3>
+    <form id="add-score-form">
+    {{form|bulma}}
+    <button class="button">Add Score</button>
+    </form>
+</div>
+{{ match.secondary_id|json_script:"match_secondary_id" }}
+    
+{% endblock content %}
+{% block script %}
+<script>
+    const matchSocondaryID = JSON.parse(document.getElementById('match_secondary_id').textContent);
+    const url = `ws://${window.location.host}/ws/livefeed/${matchSocondaryID}/`;
+    
+    const liveFeedSocket = new WebSocket(url);
+     
+    liveFeedSocket.onclose = function(e) {
+        console.error(e)
+        console.error('Chat socket closed unexpectedly');
+    };
+    
+    const addScoreForm = document.querySelector("#add-score-form");
+    
+    addScoreForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const formProps = Object.fromEntries(formData);
+        
+        liveFeedSocket.send(JSON.stringify({
+            'action': "add_score",
+            'data': formProps
+        }));
+        
+    });
+    
+    liveFeedSocket.onmessage = function(e) {
+        console.log(e);
+        const data = JSON.parse(e.data);
+        console.log(data);
+        document.querySelector('#chat-log').value += (data.message + '\n');
+    };
+    
+
+</script>
+{% endblock script %}
