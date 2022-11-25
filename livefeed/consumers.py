@@ -1,9 +1,16 @@
 import json
 
+from django.shortcuts import render
+from django.template.loader import render_to_string 
+
+from asgiref.sync import sync_to_async
+
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 
 from match.models import TeamScore, Match
 from .forms import TeamScoreForm 
+from match.views import get_match_details
 
 
 class LiveFeedConsumer2(WebsocketConsumer):
@@ -52,17 +59,23 @@ class LiveFeedConsumer(AsyncWebsocketConsumer):
             
     async def add_score(self, event):
         data = event.get("data")
-        #data["match_id"] = self.match_id 
-        #team_score = await TeamScore.objects.acreate(match=self.match, team_id=data["team"], player=data["player"], time=data["time"])
-        form = TeamScoreForm(data)
-        #form.fields['team'].queryset = match.teams.all()
-        print(form)
-        if form.is_valid():
-            team_score = form.save(commit=false)
-            team_score.match_id = self.match_id 
-            print(team_score)
-            await team_score.asave()
-        await self.send(text_data=json.dumps({"data": team_score}))
+        team_score = await TeamScore.objects.acreate(match=self.match, team_id=data["team"], player=data["player"], time=data["time"])
+        
+        match = await sync_to_async(Match.objects.prefetch_related("scores").get)(secondary_id=self.match_id)
+        team_one = await match.teams.afirst()
+        team_two = await match.teams.exclude(id=team_one.id).afirst()
+    
+        
+        print(match, team_one, team_two)
+        
+        context = {
+            "match": match,
+            "team_one": team_one,
+            "team_two": team_two,
+        }
+        rendered_score = await sync_to_async(render_to_string)('livefeed/partials/score-partial.html', context)
+        
+        await self.send(text_data=json.dumps({"action": "update_score", "rendered_html": rendered_score}))
 
         
 

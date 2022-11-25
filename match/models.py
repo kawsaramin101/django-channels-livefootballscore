@@ -28,8 +28,24 @@ class Match(models.Model):
     starts = models.DateTimeField()
     match_status = models.CharField(choices=MATCH_STATUS_OPTIONS, max_length=20)
     
+    @property
+    def first_team(self):
+        return self.teams.first() 
+        
+    @property 
+    def second_team(self):
+        return self.teams.exclude(id=self.first_team.id).first()
+    
     def __str__(self):
-        return f"{self.teams.first()} vs {self.teams.all()[1]}"
+        return str(self.id)
+        #return f"{self.teams.afirst()} vs {self.teams.exclude(id=self.teams.afirst().id).afirst()}"#exclude(id=team_one.id).afirst()
+        #return f"{self.first_team} vs {self.second_team}"
+    
+    @property
+    def name(self):
+        return f"{self.first_team} vs {self.second_team}"
+    
+    
     
     
 class TeamScore(models.Model):

@@ -4,7 +4,7 @@
 
 <div class="mt-">
     {% for match in matches %}
-        <a href="{% url 'match:match_details' match.secondary_id %}">{{match}}</a>
+        <a href="{% url 'match:match_details' match.secondary_id %}">{{match.name}}</a>
         
         {% if user.is_superuser %}
             <a href="{% url 'livefeed:add_score' match.secondary_id %}">Add Score</a>

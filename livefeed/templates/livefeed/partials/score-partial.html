@@ -1,0 +1,14 @@
+<div class="has-text-centered is-size-4">
+    {{team_one.name}} <b>{{team_one.scores.count}}</b> - <b>{{team_two.scores.count}}</b> {{team_two.name}}
+</div>
+<table class="mx-auto">
+    {% for score in match.scores.all %}
+    <tr>
+        {% if score.team == team_one %}
+        <td>{{score.player}} - {{score.time}}</td><td></td>
+        {% elif score.team == team_two %}
+        <td></td><td>{{score.player}} - {{score.time}}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>

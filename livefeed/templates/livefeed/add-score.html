@@ -4,11 +4,13 @@
 {% block content %}
 
 <div class="m-4 content">
-    <h3 class="has-text-centered">{{match}}</h3>
+    <h3 class="has-text-centered">{{match.name}}</h3>
     <form id="add-score-form">
     {{form|bulma}}
     <button class="button">Add Score</button>
     </form>
+    
+    <div id="score-updated"></div>
 </div>
 {{ match.secondary_id|json_script:"match_secondary_id" }}
     
@@ -43,7 +45,11 @@
         console.log(e);
         const data = JSON.parse(e.data);
         console.log(data);
-        document.querySelector('#chat-log').value += (data.message + '\n');
+        
+        if (data.action === "update_score") {
+            document.querySelector("#score-updated").innerText = "Score updated";
+        }
+        
     };
     
 
