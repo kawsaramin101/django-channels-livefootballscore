@@ -27,6 +27,7 @@ class Match(models.Model):
     teams = models.ManyToManyField(Team, related_name="participated_matches")
     starts = models.DateTimeField()
     match_status = models.CharField(choices=MATCH_STATUS_OPTIONS, max_length=20)
+    time_passed = models.PositiveSmallIntegerField()
     
     @property
     def first_team(self):
@@ -58,4 +59,18 @@ class TeamScore(models.Model):
     
     class Meta:
         ordering = ["-time"]
+
+
+class Commentary(models.Model):
+    
+    secondary_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    match = models.ForeignKey(Match, related_name="commentaries", on_delete=models.CASCADE)
+    time = models.PositiveSmallIntegerField()
+    text = models.TextField()
+    
+    class Meta:
+        ordering = ["-time"]
+
+    
+    
     

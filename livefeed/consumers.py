@@ -10,7 +10,7 @@ from channels.db import database_sync_to_async
 
 from match.models import TeamScore, Match
 from .forms import TeamScoreForm 
-from match.views import get_match_details
+
 
 
 class LiveFeedConsumer2(WebsocketConsumer):

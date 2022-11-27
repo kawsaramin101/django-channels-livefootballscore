@@ -6,6 +6,9 @@
         border-collapse: separate;
         border-spacing: 2rem 0;
     }
+    fieldset {
+        border: 1px solid gray;
+    }
 </style>
 {% endblock head %}
 {% block content %}
@@ -27,8 +30,15 @@
                 {% endfor %}
             </table>
         </div>
-    </div>
 
+        <h4 class="is-size-4">Commentary</h4>
+        {% for commentary in match.commentaries.all %}
+        <fieldset>
+            <legend>{{commentary.time}}</legend>
+            {{commentary.text}}
+        </fieldset>
+        {% endfor %}
+    </div>
 </div>
 {{ match.secondary_id|json_script:"match_secondary_id" }}
 
@@ -37,7 +47,7 @@
 <script>
     const matchSocondaryID = JSON.parse(document.getElementById('match_secondary_id').textContent);
     const url = `ws://${window.location.host}/ws/livefeed/${matchSocondaryID}/`;
-  
+
     const liveFeedSocket = new WebSocket(url);
 
     liveFeedSocket.onmessage = function(e) {
